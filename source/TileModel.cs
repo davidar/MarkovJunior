@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class TileNode : WFCNode
 {
@@ -107,7 +108,7 @@ class TileNode : WFCNode
         }
 
         P = tiledata.Count;
-        Console.WriteLine($"P = {P}");
+        Debug.WriteLine($"P = {P}");
         weights = tempStationary.ToArray();
 
         map = new Dictionary<byte, bool[]>();

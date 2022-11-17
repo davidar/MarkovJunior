@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 static class VoxHelper
 {
@@ -32,12 +33,12 @@ static class VoxHelper
 
                     int chunkSize = stream.ReadInt32();
                     stream.ReadBytes(4);
-                    //Console.WriteLine("found SIZE chunk");
+                    //Debug.WriteLine("found SIZE chunk");
                     MX = stream.ReadInt32();
                     MY = stream.ReadInt32();
                     MZ = stream.ReadInt32();
                     stream.ReadBytes(chunkSize - 4 * 3);
-                    //Console.WriteLine($"size = ({MX}, {MY}, {MZ})");
+                    //Debug.WriteLine($"size = ({MX}, {MY}, {MZ})");
                 }
                 else if (head == 'X')
                 {
@@ -48,10 +49,10 @@ static class VoxHelper
                     result = new int[MX * MY * MZ];
                     for (int i = 0; i < result.Length; i++) result[i] = -1;
 
-                    //Console.WriteLine("found XYZI chunk");
+                    //Debug.WriteLine("found XYZI chunk");
                     stream.ReadBytes(8);
                     int numVoxels = stream.ReadInt32();
-                    //Console.WriteLine($"number of voxels = {numVoxels}");
+                    //Debug.WriteLine($"number of voxels = {numVoxels}");
                     for (int i = 0; i < numVoxels; i++)
                     {
                         byte x = stream.ReadByte();
@@ -59,7 +60,7 @@ static class VoxHelper
                         byte z = stream.ReadByte();
                         byte color = stream.ReadByte();
                         result[x + y * MX + z * MX * MY] = color;
-                        //Console.WriteLine($"adding voxel {x} {y} {z} of color {color}");
+                        //Debug.WriteLine($"adding voxel {x} {y} {z} of color {color}");
                     }
                 }
             }

@@ -2,6 +2,7 @@
 
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class Observation
 {
@@ -34,7 +35,7 @@ class Observation
 
         for (int k = 0; k < mask.Length; k++) if (!mask[k])
             {
-                //Console.WriteLine($"observed value {k} not present on the grid, observe-node returning false");
+                //Debug.WriteLine($"observed value {k} not present on the grid, observe-node returning false");
                 return false;
             }
         return true;

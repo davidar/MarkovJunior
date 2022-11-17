@@ -3,6 +3,7 @@
 using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class Interpreter
 {
@@ -27,7 +28,7 @@ class Interpreter
         ip.grid = Grid.Load(xelem, MX, MY, MZ);
         if (ip.grid == null)
         {
-            Console.WriteLine("failed to load grid");
+            Debug.WriteLine("failed to load grid");
             return null;
         }
         ip.startgrid = ip.grid;
@@ -69,7 +70,7 @@ class Interpreter
         {
             if (gif)
             {
-                Console.WriteLine($"[{counter}]");
+                Debug.WriteLine($"[{counter}]");
                 yield return (grid.state, grid.characters, grid.MX, grid.MY, grid.MZ);
             }
 
@@ -81,6 +82,6 @@ class Interpreter
         yield return (grid.state, grid.characters, grid.MX, grid.MY, grid.MZ);
     }
 
-    public static void WriteLine(string s) => Console.WriteLine(s);
-    public static void Write(string s) => Console.Write(s);
+    public static void WriteLine(string s) => Debug.WriteLine(s);
+    public static void Write(string s) => Debug.Write(s);
 }

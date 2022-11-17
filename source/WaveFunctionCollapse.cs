@@ -3,6 +3,7 @@
 using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 abstract class WFCNode : Branch
 {
@@ -87,7 +88,7 @@ abstract class WFCNode : Branch
             bool firstSuccess = Propagate();
             if (!firstSuccess)
             {
-                Console.WriteLine("initial conditions are contradictive");
+                Debug.WriteLine("initial conditions are contradictive");
                 return false;
             }
             startwave.CopyFrom(wave, propagator.Length, shannon);
@@ -138,19 +139,19 @@ abstract class WFCNode : Branch
                     bool success = Propagate();
                     if (!success)
                     {
-                        Console.WriteLine($"CONTRADICTION on try {k} with {observationsSoFar} observations");
+                        Debug.WriteLine($"CONTRADICTION on try {k} with {observationsSoFar} observations");
                         break;
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"wfc found a good seed {seed} on try {k} with {observationsSoFar} observations");
+                    Debug.WriteLine($"wfc found a good seed {seed} on try {k} with {observationsSoFar} observations");
                     return seed;
                 }
             }
         }
 
-        Console.WriteLine($"wfc failed to find a good seed in {tries} tries");
+        Debug.WriteLine($"wfc failed to find a good seed in {tries} tries");
         return null;
     }
 

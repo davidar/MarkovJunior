@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class OverlapNode : WFCNode
 {
@@ -88,7 +89,7 @@ class OverlapNode : WFCNode
             }
 
         P = weights.Count;
-        Console.WriteLine($"number of patterns P = {P}");
+        Debug.WriteLine($"number of patterns P = {P}");
 
         patterns = new byte[P][];
         base.weights = new double[P];

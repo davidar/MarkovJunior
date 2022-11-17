@@ -3,12 +3,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 static class Search
 {
     public static byte[][] Run(byte[] present, int[] future, Rule[] rules, int MX, int MY, int MZ, int C, bool all, int limit, double depthCoefficient, int seed)
     {
-        //Console.WriteLine("START SEARCH");
+        //Debug.WriteLine("START SEARCH");
         //present.Print(MX, MY);
         int[][] bpotentials = AH.Array2D(C, present.Length, -1);
         int[][] fpotentials = AH.Array2D(C, present.Length, -1);
@@ -20,10 +21,10 @@ static class Search
 
         if (rootBackwardEstimate < 0 || rootForwardEstimate < 0)
         {
-            Console.WriteLine("INCORRECT PROBLEM");
+            Debug.WriteLine("INCORRECT PROBLEM");
             return null;
         }
-        Console.WriteLine($"root estimate = ({rootBackwardEstimate}, {rootForwardEstimate})");
+        Debug.WriteLine($"root estimate = ({rootBackwardEstimate}, {rootForwardEstimate})");
         if (rootBackwardEstimate == 0) return Array.Empty<byte[]>();
         Board rootBoard = new(present, -1, 0, rootBackwardEstimate, rootForwardEstimate);
 
@@ -43,12 +44,12 @@ static class Search
             int parentIndex = frontier.Dequeue();
             frontierLength--;
             Board parentBoard = database[parentIndex];
-            //Console.WriteLine("-----------------------------------------------------------------------------------");
-            //Console.WriteLine($"extracting board at depth {parentBoard.depth} and estimate ({parentBoard.backwardEstimate}, {parentBoard.forwardEstimate}):");
+            //Debug.WriteLine("-----------------------------------------------------------------------------------");
+            //Debug.WriteLine($"extracting board at depth {parentBoard.depth} and estimate ({parentBoard.backwardEstimate}, {parentBoard.forwardEstimate}):");
             //parentBoard.state.Print(MX, MY);
 
             var children = all ? parentBoard.state.AllChildStates(MX, MY, rules) : parentBoard.state.OneChildStates(MX, MY, rules);
-            //Console.WriteLine($"this board has {children.Length} children");
+            //Debug.WriteLine($"this board has {children.Length} children");
             foreach (var childState in children)
             //for (int c = 0; c < children.Length; c++)
             {
@@ -59,7 +60,7 @@ static class Search
                     Board oldBoard = database[childIndex];
                     if (parentBoard.depth + 1 < oldBoard.depth)
                     {
-                        //Console.WriteLine($"found a shorter {parentBoard.depth + 1}-route to an existing {oldBoard.depth}-board of estimate ({oldBoard.backwardEstimate}, {oldBoard.forwardEstimate})");
+                        //Debug.WriteLine($"found a shorter {parentBoard.depth + 1}-route to an existing {oldBoard.depth}-board of estimate ({oldBoard.backwardEstimate}, {oldBoard.forwardEstimate})");
                         oldBoard.depth = parentBoard.depth + 1;
                         oldBoard.parentIndex = parentIndex;
 
@@ -69,7 +70,7 @@ static class Search
                             frontierLength++;
                         }
                     }
-                    //else Console.WriteLine($"found a longer {parentBoard.depth + 1}-route to an existing {oldBoard.depth}-board of estimate ({oldBoard.backwardEstimate}, {oldBoard.forwardEstimate})");
+                    //else Debug.WriteLine($"found a longer {parentBoard.depth + 1}-route to an existing {oldBoard.depth}-board of estimate ({oldBoard.backwardEstimate}, {oldBoard.forwardEstimate})");
                 }
                 else
                 {
@@ -77,7 +78,7 @@ static class Search
                     Observation.ComputeForwardPotentials(fpotentials, childState, MX, MY, MZ, rules);
                     int childForwardEstimate = Observation.ForwardPointwise(fpotentials, future);
 
-                    //Console.WriteLine($"child {c} has estimate ({childBackwardEstimate}, {childForwardEstimate}):");
+                    //Debug.WriteLine($"child {c} has estimate ({childBackwardEstimate}, {childForwardEstimate}):");
                     //childState.Print(MX, MY);
                     if (childBackwardEstimate < 0 || childForwardEstimate < 0) continue;
 
@@ -88,7 +89,7 @@ static class Search
 
                     if (childBoard.forwardEstimate == 0)
                     {
-                        Console.WriteLine($"found a trajectory of length {parentBoard.depth + 1}, visited {visited.Count} states");
+                        Debug.WriteLine($"found a trajectory of length {parentBoard.depth + 1}, visited {visited.Count} states");
                         List<Board> trajectory = Board.Trajectory(childIndex, database);
                         trajectory.Reverse();
                         return trajectory.Select(b => b.state).ToArray();
@@ -98,7 +99,7 @@ static class Search
                         if (limit < 0 && childBackwardEstimate + childForwardEstimate <= record)
                         {
                             record = childBackwardEstimate + childForwardEstimate;
-                            Console.WriteLine($"found a state of record estimate {record} = {childBackwardEstimate} + {childForwardEstimate}");
+                            Debug.WriteLine($"found a state of record estimate {record} = {childBackwardEstimate} + {childForwardEstimate}");
                             childState.Print(MX, MY);
                         }
                         frontier.Enqueue(childIndex, childBoard.Rank(random, depthCoefficient));
@@ -151,8 +152,8 @@ static class Search
         char[] characters = new[] { '.', 'R', 'W', '#', 'a', '!', '?', '%', '0', '1', '2', '3', '4', '5' };
         for (int y = 0; y < MY; y++)
         {
-            for (int x = 0; x < MX; x++) Console.Write($"{characters[state[x + y * MX]]} ");
-            Console.WriteLine();
+            for (int x = 0; x < MX; x++) Debug.Write($"{characters[state[x + y * MX]]} ");
+            Debug.WriteLine("");
         }
     }
 

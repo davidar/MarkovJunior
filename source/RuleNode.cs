@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 abstract class RuleNode : Node
 {
@@ -139,7 +140,7 @@ abstract class RuleNode : Node
                     trajectory = null;
                     int TRIES = limit < 0 ? 1 : 20;
                     for (int k = 0; k < TRIES && trajectory == null; k++) trajectory = Search.Run(grid.state, future, rules, grid.MX, grid.MY, grid.MZ, grid.C, this is AllNode, limit, depthCoefficient, ip.random.Next());
-                    if (trajectory == null) Console.WriteLine("SEARCH RETURNED NULL");
+                    if (trajectory == null) Debug.WriteLine("SEARCH RETURNED NULL");
                 }
                 else Observation.ComputeBackwardPotentials(potentials, future, MX, MY, MZ, rules);
             }

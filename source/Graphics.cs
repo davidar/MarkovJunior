@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -25,7 +27,7 @@ static class Graphics
     {
         if (width <= 0 || height <= 0 || data.Length != width * height)
         {
-            Console.WriteLine($"ERROR: wrong image width * height = {width} * {height}");
+            Debug.WriteLine($"ERROR: wrong image width * height = {width} * {height}");
             return;
         }
         fixed (int* pData = data)
