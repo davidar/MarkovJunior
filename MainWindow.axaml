@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mj="using:MarkovJuniorUI"
+        x:Class="MarkovJuniorUI.MainWindow"
+		Width="256" Height="30"
+		d:DesignWidth="512" d:DesignHeight="512"
+        Title="MarkovJuniorUI">
+	<StackPanel>
+		<DockPanel Height="30">
+			<Button Content="Run" Click="Button_OnClick" />
+			<TextBlock x:Name="TextBlock_Result" TextAlignment="Right" Text="" />
+		</DockPanel>
+		<mj:WriteableBitmapPage x:Name="Framebuffer" />
+	</StackPanel>
+</Window>

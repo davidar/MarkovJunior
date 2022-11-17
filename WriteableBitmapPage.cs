@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -14,12 +15,21 @@ public class WriteableBitmapPage : Control
 {
     private WriteableBitmap? Bitmap;
 
-    public void ResizeBitmap(int width, int height)
+    public void Resize(int width, int height)
     {
         if (Bitmap is null || Bitmap.Size.Width != width || Bitmap.Size.Height != height)
         {
             Bitmap?.Dispose();
             Bitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
+        }
+
+        Width = width;
+        Height = height;
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow.Width = width;
+            desktop.MainWindow.Height = height + 30;
         }
     }
 
