@@ -8,10 +8,9 @@ using System.Diagnostics;
 class Interpreter
 {
     public Branch? root, current;
-    public Grid? grid;
-    Grid startgrid;
-
-    bool origin;
+    public Grid grid;
+    readonly Grid startgrid;
+    readonly bool origin;
     public Random random;
 
     public List<(int, int, int)> changes;
@@ -20,18 +19,25 @@ class Interpreter
     
     public bool gif;
 
-    Interpreter() { }
+    private Interpreter(bool origin, Grid grid)
+    {
+        this.origin = origin;
+        this.grid = grid;
+        startgrid = grid;
+        changes = new List<(int, int, int)>();
+        first = new List<int>();
+        random = new Random();
+    }
+
     public static Interpreter? Load(XElement xelem, int MX, int MY, int MZ)
     {
-        Interpreter ip = new();
-        ip.origin = xelem.Get("origin", false);
-        ip.grid = Grid.Load(xelem, MX, MY, MZ);
-        if (ip.grid == null)
+        var grid = Grid.Load(xelem, MX, MY, MZ);
+        if (grid == null)
         {
             Debug.WriteLine("failed to load grid");
             return null;
         }
-        ip.startgrid = ip.grid;
+        Interpreter ip = new(xelem.Get("origin", false), grid);
 
         var symmetryString = xelem.Get<string?>("symmetry", null);
         var symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, AH.Array1D(ip.grid.MZ == 1 ? 8 : 48, true));
@@ -45,8 +51,6 @@ class Interpreter
         if (topnode == null) return null;
         ip.root = topnode is Branch ? topnode as Branch : new MarkovNode(topnode, ip);
 
-        ip.changes = new List<(int, int, int)>();
-        ip.first = new List<int>();
         return ip;
     }
 

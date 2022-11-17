@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 class MapNode : Branch
 {
-    public Grid? newgrid;
+    public Grid newgrid;
     public Rule[] rules;
     int NX, NY, NZ, DX, DY, DZ;
 
@@ -38,8 +38,9 @@ class MapNode : Branch
         (NY, DY) = readScale(scales[1]);
         (NZ, DZ) = readScale(scales[2]);
 
-        newgrid = Grid.Load(xelem, grid.MX * NX / DX, grid.MY * NY / DY, grid.MZ * NZ / DZ);
+        var newgrid = Grid.Load(xelem, grid.MX * NX / DX, grid.MY * NY / DY, grid.MZ * NZ / DZ);
         if (newgrid == null) return false;
+        this.newgrid = newgrid;
 
         if (!base.Load(xelem, parentSymmetry, newgrid)) return false;
         var symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, xelem.Get<string?>("symmetry", null), parentSymmetry);
@@ -96,7 +97,7 @@ class MapNode : Branch
     {
         if (n >= 0) return base.Go();
 
-        newgrid?.Clear();
+        newgrid.Clear();
         foreach (Rule rule in rules)
             for (int z = 0; z < grid.MZ; z++) for (int y = 0; y < grid.MY; y++) for (int x = 0; x < grid.MX; x++)
                         if (Matches(rule, x, y, z, grid.state, grid.MX, grid.MY, grid.MZ))

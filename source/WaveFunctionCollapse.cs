@@ -18,7 +18,7 @@ abstract class WFCNode : Branch
     double[] weightLogWeights;
     double sumOfWeights, sumOfWeightLogWeights, startingEntropy;
 
-    protected Grid? newgrid;
+    protected Grid newgrid;
     Wave startwave;
 
     protected Dictionary<byte, bool[]> map;
@@ -100,7 +100,7 @@ abstract class WFCNode : Branch
             wave.CopyFrom(startwave, propagator.Length, shannon);
             firstgo = false;
 
-            newgrid?.Clear();
+            newgrid.Clear();
             ip.grid = newgrid;
             return true;
         }

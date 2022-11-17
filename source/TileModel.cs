@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 class TileNode : WFCNode
 {
@@ -30,9 +31,25 @@ class TileNode : WFCNode
             return false;
         }
         XElement? xroot = xdoc.Root;
+        if (xroot is null)
+        {
+            Interpreter.WriteLine($"couldn't parse tileset {filepath}");
+            return false;
+        }
 
         bool fullSymmetry = xroot.Get("fullSymmetry", false);
-        var xfirsttile = xroot.Element("tiles")?.Element("tile");
+        var tiles = xroot.Element("tiles");
+        if (tiles is null)
+        {
+            Interpreter.WriteLine("missing tiles");
+            return false;
+        }
+        var xfirsttile = tiles.Element("tile");
+        if (xfirsttile is null)
+        {
+            Interpreter.WriteLine("missing first tile");
+            return false;
+        }
         string firstFileName = $"{tilesname}/{xfirsttile.Get<string>("name")}.vox";
         int[]? firstData;
         int SY;
@@ -53,8 +70,9 @@ class TileNode : WFCNode
             return false;
         }
 
-        newgrid = Grid.Load(xelem, (S - overlap) * grid.MX + overlap, (S - overlap) * grid.MY + overlap, (SZ - overlapz) * grid.MZ + overlapz);
+        var newgrid = Grid.Load(xelem, (S - overlap) * grid.MX + overlap, (S - overlap) * grid.MY + overlap, (SZ - overlapz) * grid.MZ + overlapz);
         if (newgrid == null) return false;
+        this.newgrid = newgrid;
 
         tiledata = new List<byte[]>();
         Dictionary<string, bool[]> positions = new();
@@ -71,7 +89,7 @@ class TileNode : WFCNode
         var tempStationary = new List<double>();
 
         var uniques = new List<int>();
-        var xtiles = xroot.Element("tiles").Elements("tile");
+        var xtiles = tiles.Elements("tile");
         int ind = 0;
         foreach (XElement xtile in xtiles)
         {
@@ -138,9 +156,12 @@ class TileNode : WFCNode
             return -1;
         };
 
-        static string last(string attribute) => attribute.Split(' ').Last();
-        byte[]? tile(string attribute)
+        [return: NotNullIfNotNull(nameof(attribute))]
+        static string? last(string? attribute) => attribute?.Split(' ').Last();
+
+        byte[]? tile(string? attribute)
         {
+            if (attribute == null) return null;
             string[] code = attribute.Split(' ');
             string action = code.Length == 2 ? code[0] : "";
             byte[] starttile = namedTileData[last(attribute)][0];
@@ -159,10 +180,17 @@ class TileNode : WFCNode
             return starttile;
         };
 
-        List<string> tilenames = xtiles.Select(x => x.Get<string>("name")).ToList();
+        List<string?> tilenames = xtiles.Select(x => x.Get<string?>("name")).ToList();
         tilenames.Add(null);
 
-        foreach (XElement xneighbor in xroot.Element("neighbors").Elements("neighbor"))
+        var neighbors = xroot.Element("neighbors");
+        if (neighbors == null)
+        {
+            Interpreter.WriteLine("missing neighbors");
+            return false;
+        }
+
+        foreach (XElement xneighbor in neighbors.Elements("neighbor"))
         {
             if (fullSymmetry)
             {

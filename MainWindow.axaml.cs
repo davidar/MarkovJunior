@@ -18,17 +18,35 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    async Task<TimeSpan> Run()
+    async Task<TimeSpan?> Run()
     {
         Stopwatch sw = Stopwatch.StartNew();
         Random meta = new();
 
-        Dictionary<char, int> palette = XDocument.Load("resources/palette.xml").Root.Elements("color").ToDictionary(x => x.Get<char>("symbol"), x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16));
+        var xroot = XDocument.Load("resources/palette.xml").Root;
+        if (xroot is null)
+        {
+            Debug.WriteLine("unable to load palette");
+            return null;
+        }
+        Dictionary<char, int> palette = xroot.Elements("color").ToDictionary(x => x.Get<char>("symbol"), x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16));
 
         string name = "BasicSnake";
         int size = 23;
 
-        Interpreter interpreter = Interpreter.Load(XDocument.Load($"models/{name}.xml", LoadOptions.SetLineInfo).Root, size, size, 1);
+        var model = XDocument.Load($"models/{name}.xml", LoadOptions.SetLineInfo).Root;
+        if (model is null)
+        {
+            Debug.WriteLine("unable to parse model");
+            return null;
+        }
+
+        var interpreter = Interpreter.Load(model, size, size, 1);
+        if (interpreter is null)
+        {
+            Debug.WriteLine("unable to load model");
+            return null;
+        }
 
         int pixelsize = 16;
         int steps = 100;
@@ -41,6 +59,11 @@ public partial class MainWindow : Window
         {
             var colors = legend.Select(ch => palette[ch]).ToArray();
             var (bitmap, width, height) = Graphics.Render(result, FX, FY, FZ, colors, pixelsize, margin);
+            if (interpreter.root is null || interpreter.current is null)
+            {
+                Debug.WriteLine("interpreter failed");
+                return null;
+            }
             GUI.Draw(name, interpreter.root, interpreter.current, bitmap, width, height, palette);
             fb.Resize(width, height);
             fb.SetBitmap(bitmap);

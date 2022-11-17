@@ -10,15 +10,20 @@ static class XMLHelper
 {
     public static T Get<T>(this XElement xelem, string attribute)
     {
-        XAttribute a = xelem.Attribute(attribute);
+        var a = xelem.Attribute(attribute);
         if (a == null) throw new Exception($"xelement {xelem.Name} didn't have attribute {attribute}");
-        return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(a.Value);
+        var t = (T?)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(a.Value);
+        if (t == null) throw new Exception($"xelement {xelem.Name} has malformed attribute {attribute}");
+        return t;
     }
 
     public static T Get<T>(this XElement xelem, string attribute, T dflt)
     {
-        XAttribute a = xelem.Attribute(attribute);
-        return a == null ? dflt : (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(a.Value);
+        var a = xelem.Attribute(attribute);
+        if (a == null) return dflt;
+        var t = (T?)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(a.Value);
+        if (t == null) return dflt;
+        return t;
     }
 
     public static int LineNumber(this XElement xelem) => ((System.Xml.IXmlLineInfo)xelem).LineNumber;

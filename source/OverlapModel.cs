@@ -29,8 +29,9 @@ class OverlapNode : WFCNode
 
         bool periodicInput = xelem.Get("periodicInput", true);
 
-        newgrid = Grid.Load(xelem, grid.MX, grid.MY, grid.MZ);
+        var newgrid = Grid.Load(xelem, grid.MX, grid.MY, grid.MZ);
         if (newgrid == null) return false;
+        this.newgrid = newgrid;
         periodic = true;
 
         name = xelem.Get<string>("sample");

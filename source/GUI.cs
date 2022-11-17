@@ -23,16 +23,19 @@ static class GUI
         fonts = new (bool[], int, int)[2];
 
         var (bitmap, width, height, _) = Graphics.LoadBitmap($"resources/fonts/{FONT}.png");
+        if (bitmap is null) throw new Exception($"unable to load resources/fonts/{FONT}.png");
         int b0 = bitmap[0];
         int b1 = bitmap[width - 1];
         fonts[0] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
         
         (bitmap, width, height, _) = Graphics.LoadBitmap($"resources/fonts/{TITLEFONT}.png");
+        if (bitmap is null) throw new Exception($"unable to load resources/fonts/{TITLEFONT}.png");
         b0 = bitmap[0];
         b1 = bitmap[width - 1];
         fonts[1] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
 
         var settings = XDocument.Load("resources/settings.xml").Root;
+        if (settings is null) throw new Exception("unable to load resources/settings.xml");
         S = settings.Get("squareSize", 7);
         SMALL = settings.Get("smallSquareSize", 3);
         MAXWIDTH = settings.Get("maxwidth", 10);

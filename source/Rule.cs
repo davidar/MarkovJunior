@@ -200,14 +200,14 @@ class Rule
                 return null;
             }
 
-            (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource(filepath(finString), legend, gin.MZ == 1);
+            (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource(filepath(finString!), legend, gin.MZ == 1);
             if (inRect == null)
             {
                 Interpreter.WriteLine($" in input at line {lineNumber}");
                 return null;
             }
 
-            (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource(filepath(foutString), legend, gin.MZ == 1);
+            (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource(filepath(foutString!), legend, gin.MZ == 1);
             if (outRect == null)
             {
                 Interpreter.WriteLine($" in output at line {lineNumber}");

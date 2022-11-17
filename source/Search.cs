@@ -280,8 +280,10 @@ class Board
 
 class StateComparer : IEqualityComparer<byte[]>
 {
-    public bool Equals(byte[] a, byte[] b)
+    public bool Equals(byte[]? a, byte[]? b)
     {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
         for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false;
         return true;
     }
