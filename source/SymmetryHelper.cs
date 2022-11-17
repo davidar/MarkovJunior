@@ -16,7 +16,7 @@ static class SymmetryHelper
         ["(xy)"] = new bool[8] { true, true, true, true, true, true, true, true }
     };
 
-    public static IEnumerable<T> SquareSymmetries<T>(T thing, Func<T, T> rotation, Func<T, T> reflection, Func<T, T, bool> same, bool[] subgroup = null)
+    public static IEnumerable<T> SquareSymmetries<T>(T thing, Func<T, T> rotation, Func<T, T> reflection, Func<T, T, bool> same, bool[]? subgroup = null)
     {
         T[] things = new T[8];
 
@@ -45,7 +45,7 @@ static class SymmetryHelper
         //["(xy)(z)"] = AH.Array1D(48, l => l < 8 || l == 17 || ...),
     };
 
-    public static IEnumerable<T> CubeSymmetries<T>(T thing, Func<T, T> a, Func<T, T> b, Func<T, T> r, Func<T, T, bool> same, bool[] subgroup = null)
+    public static IEnumerable<T> CubeSymmetries<T>(T thing, Func<T, T> a, Func<T, T> b, Func<T, T> r, Func<T, T, bool> same, bool[]? subgroup = null)
     {
         T[] s = new T[48];
 
@@ -103,10 +103,10 @@ static class SymmetryHelper
         return result;
     }
 
-    public static bool[] GetSymmetry(bool d2, string s, bool[] dflt)
+    public static bool[]? GetSymmetry(bool d2, string? s, bool[] dflt)
     {
         if (s == null) return dflt;
-        bool success = d2 ? squareSubgroups.TryGetValue(s, out bool[] result) : cubeSubgroups.TryGetValue(s, out result);
+        bool success = d2 ? squareSubgroups.TryGetValue(s, out bool[]? result) : cubeSubgroups.TryGetValue(s, out result);
         return success ? result : null;
     }
 }

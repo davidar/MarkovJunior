@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 class MapNode : Branch
 {
-    public Grid newgrid;
+    public Grid? newgrid;
     public Rule[] rules;
     int NX, NY, NZ, DX, DY, DZ;
 
     override protected bool Load(XElement xelem, bool[] parentSymmetry, Grid grid)
     {
-        string scalestring = xelem.Get<string>("scale", null);
+        var scalestring = xelem.Get<string?>("scale", null);
         if (scalestring == null)
         {
             Interpreter.WriteLine($"scale should be specified in map node");
@@ -42,14 +42,14 @@ class MapNode : Branch
         if (newgrid == null) return false;
 
         if (!base.Load(xelem, parentSymmetry, newgrid)) return false;
-        bool[] symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, xelem.Get<string>("symmetry", null), parentSymmetry);
+        var symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, xelem.Get<string?>("symmetry", null), parentSymmetry);
 
         List<Rule> ruleList = new();
         foreach (XElement xrule in xelem.Elements("rule"))
         {
-            Rule rule = Rule.Load(xrule, grid, newgrid);
-            rule.original = true;
+            var rule = Rule.Load(xrule, grid, newgrid);
             if (rule == null) return false;
+            rule.original = true;
             foreach (Rule r in rule.Symmetries(symmetry, grid.MZ == 1)) ruleList.Add(r);
         }
         rules = ruleList.ToArray();
@@ -96,7 +96,7 @@ class MapNode : Branch
     {
         if (n >= 0) return base.Go();
 
-        newgrid.Clear();
+        newgrid?.Clear();
         foreach (Rule rule in rules)
             for (int z = 0; z < grid.MZ; z++) for (int y = 0; y < grid.MY; y++) for (int x = 0; x < grid.MX; x++)
                         if (Matches(rule, x, y, z, grid.state, grid.MX, grid.MY, grid.MZ))

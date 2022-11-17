@@ -107,20 +107,20 @@ class Rule
         return true;
     }
 
-    public IEnumerable<Rule> Symmetries(bool[] symmetry, bool d2)
+    public IEnumerable<Rule> Symmetries(bool[]? symmetry, bool d2)
     {
         if (d2) return SymmetryHelper.SquareSymmetries(this, r => r.ZRotated(), r => r.Reflected(), Same, symmetry);
         else return SymmetryHelper.CubeSymmetries(this, r => r.ZRotated(), r => r.YRotated(), r => r.Reflected(), Same, symmetry);
     }
 
-    public static (char[] data, int MX, int MY, int MZ) LoadResource(string filename, string legend, bool d2)
+    public static (char[]? data, int MX, int MY, int MZ) LoadResource(string filename, string? legend, bool d2)
     {
         if (legend == null)
         {
             Interpreter.WriteLine($"no legend for {filename}");
             return (null, -1, -1, -1);
         }
-        (int[] data, int MX, int MY, int MZ) = d2 ? Graphics.LoadBitmap(filename) : VoxHelper.LoadVox(filename);
+        var (data, MX, MY, MZ) = d2 ? Graphics.LoadBitmap(filename) : VoxHelper.LoadVox(filename);
         if (data == null)
         {
             Interpreter.WriteLine($"couldn't read {filename}");
@@ -135,7 +135,7 @@ class Rule
         return (ords.Select(o => legend[o]).ToArray(), MX, MY, MZ);
     }
 
-    static (char[], int, int, int) Parse(string s)
+    static (char[]?, int, int, int) Parse(string s)
     {
         string[][] lines = Helper.Split(s, ' ', '/');
         int MX = lines[0][0].Length;
@@ -166,7 +166,7 @@ class Rule
         return (result, MX, MY, MZ);
     }
 
-    public static Rule Load(XElement xelem, Grid gin, Grid gout)
+    public static Rule? Load(XElement xelem, Grid gin, Grid gout)
     {
         int lineNumber = xelem.LineNumber();
         string filepath(string name)
@@ -178,14 +178,14 @@ class Rule
             return result;
         };
 
-        string inString = xelem.Get<string>("in", null);
-        string outString = xelem.Get<string>("out", null);
-        string finString = xelem.Get<string>("fin", null);
-        string foutString = xelem.Get<string>("fout", null);
-        string fileString = xelem.Get<string>("file", null);
-        string legend = xelem.Get<string>("legend", null);
+        var inString = xelem.Get<string?>("in", null);
+        var outString = xelem.Get<string?>("out", null);
+        var finString = xelem.Get<string?>("fin", null);
+        var foutString = xelem.Get<string?>("fout", null);
+        var fileString = xelem.Get<string?>("file", null);
+        var legend = xelem.Get<string?>("legend", null);
 
-        char[] inRect, outRect;
+        char[]? inRect, outRect;
         int IMX = -1, IMY = -1, IMZ = -1, OMX = -1, OMY = -1, OMZ = -1;
         if (fileString == null)
         {
@@ -227,7 +227,7 @@ class Rule
                 Interpreter.WriteLine($"rule at line {lineNumber} already contains a file attribute");
                 return null;
             }
-            (char[] rect, int FX, int FY, int FZ) = LoadResource(filepath(fileString), legend, gin.MZ == 1);
+            var (rect, FX, FY, FZ) = LoadResource(filepath(fileString), legend, gin.MZ == 1);
             if (rect == null)
             {
                 Interpreter.WriteLine($" in a rule at line {lineNumber}");

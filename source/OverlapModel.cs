@@ -19,8 +19,8 @@ class OverlapNode : WFCNode
         }
         N = xelem.Get("n", 3);
 
-        string symmetryString = xelem.Get<string>("symmetry", null);
-        bool[] symmetry = SymmetryHelper.GetSymmetry(true, symmetryString, parentSymmetry);
+        var symmetryString = xelem.Get<string?>("symmetry", null);
+        var symmetry = SymmetryHelper.GetSymmetry(true, symmetryString, parentSymmetry);
         if (symmetry == null)
         {
             Interpreter.WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
@@ -34,7 +34,7 @@ class OverlapNode : WFCNode
         periodic = true;
 
         name = xelem.Get<string>("sample");
-        (int[] bitmap, int SMX, int SMY, _) = Graphics.LoadBitmap($"resources/samples/{name}.png");
+        var (bitmap, SMX, SMY, _) = Graphics.LoadBitmap($"resources/samples/{name}.png");
         if (bitmap == null)
         {
             Interpreter.WriteLine($"couldn't read sample {name}");

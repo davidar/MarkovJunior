@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 static class Search
 {
-    public static byte[][] Run(byte[] present, int[] future, Rule[] rules, int MX, int MY, int MZ, int C, bool all, int limit, double depthCoefficient, int seed)
+    public static byte[][]? Run(byte[] present, int[] future, Rule[] rules, int MX, int MY, int MZ, int C, bool all, int limit, double depthCoefficient, int seed)
     {
         //Debug.WriteLine("START SEARCH");
         //present.Print(MX, MY);

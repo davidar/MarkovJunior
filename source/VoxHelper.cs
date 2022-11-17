@@ -8,14 +8,14 @@ using System.Diagnostics;
 
 static class VoxHelper
 {
-    public static (int[], int, int, int) LoadVox(string filename)
+    public static (int[]?, int, int, int) LoadVox(string filename)
     {
         try
         {
             using FileStream file = File.Open(filename, FileMode.Open);
             var stream = new BinaryReader(file);
 
-            int[] result = null;
+            int[]? result = null;
             int MX = -1, MY = -1, MZ = -1;
 
             string magic = new(stream.ReadChars(4));

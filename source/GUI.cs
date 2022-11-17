@@ -22,7 +22,7 @@ static class GUI
         for (int i = 0; i < legend.Length; i++) map.Add(legend[i], (byte)i);
         fonts = new (bool[], int, int)[2];
 
-        (int[] bitmap, int width, int height, _) = Graphics.LoadBitmap($"resources/fonts/{FONT}.png");
+        var (bitmap, width, height, _) = Graphics.LoadBitmap($"resources/fonts/{FONT}.png");
         int b0 = bitmap[0];
         int b1 = bitmap[width - 1];
         fonts[0] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
@@ -32,7 +32,7 @@ static class GUI
         b1 = bitmap[width - 1];
         fonts[1] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
 
-        XElement settings = XDocument.Load("resources/settings.xml").Root;
+        var settings = XDocument.Load("resources/settings.xml").Root;
         S = settings.Get("squareSize", 7);
         SMALL = settings.Get("smallSquareSize", 3);
         MAXWIDTH = settings.Get("maxwidth", 10);
@@ -306,7 +306,7 @@ static class GUI
 
         draw(root, 0);
         drawLine(root);
-        for (Branch b = current; b != null; b = b.parent)
+        for (Branch? b = current; b != null; b = b.parent)
         {
             if (b.n >= 0)
             {

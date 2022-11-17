@@ -22,7 +22,7 @@ abstract class RuleNode : Node
 
     protected bool search, futureComputed;
     protected int[] future;
-    protected byte[][] trajectory;
+    protected byte[][]? trajectory;
 
     int limit;
     double depthCoefficient;
@@ -31,8 +31,8 @@ abstract class RuleNode : Node
 
     override protected bool Load(XElement xelem, bool[] parentSymmetry, Grid grid)
     {
-        string symmetryString = xelem.Get<string>("symmetry", null);
-        bool[] symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, symmetryString, parentSymmetry);
+        var symmetryString = xelem.Get<string?>("symmetry", null);
+        var symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, symmetryString, parentSymmetry);
         if (symmetry == null)
         {
             Interpreter.WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
@@ -44,12 +44,12 @@ abstract class RuleNode : Node
         XElement[] ruleElements = xrules.Length > 0 ? xrules : new XElement[] { xelem };
         foreach (XElement xrule in ruleElements)
         {
-            Rule rule = Rule.Load(xrule, grid, grid);
+            var rule = Rule.Load(xrule, grid, grid);
             if (rule == null) return false;
             rule.original = true;
 
-            string ruleSymmetryString = xrule.Get<string>("symmetry", null);
-            bool[] ruleSymmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, ruleSymmetryString, symmetry);
+            var ruleSymmetryString = xrule.Get<string?>("symmetry", null);
+            var ruleSymmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, ruleSymmetryString, symmetry);
             if (ruleSymmetry == null)
             {
                 Interpreter.WriteLine($"unknown symmetry {ruleSymmetryString} at line {xrule.LineNumber()}");
@@ -112,9 +112,12 @@ abstract class RuleNode : Node
         for (int r = 0; r < last.Length; r++) last[r] = false;
     }
 
-    protected virtual void Add(int r, int x, int y, int z, bool[] maskr)
+    protected virtual void Add(int r, int x, int y, int z, bool[]? maskr)
     {
-        maskr[x + y * grid.MX + z * grid.MX * grid.MY] = true;
+        if (maskr is not null)
+        {
+            maskr[x + y * grid.MX + z * grid.MX * grid.MY] = true;
+        }
 
         var match = (r, x, y, z);
         if (matchCount < matches.Count) matches[matchCount] = match;
@@ -178,7 +181,7 @@ abstract class RuleNode : Node
             for (int r = 0; r < rules.Length; r++)
             {
                 Rule rule = rules[r];
-                bool[] maskr = matchMask?[r];
+                var maskr = matchMask?[r];
                 for (int z = rule.IMZ - 1; z < MZ; z += rule.IMZ)
                     for (int y = rule.IMY - 1; y < MY; y += rule.IMY)
                         for (int x = rule.IMX - 1; x < MX; x += rule.IMX)

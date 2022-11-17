@@ -15,18 +15,18 @@ class Grid
     public char[] characters;
     public Dictionary<char, byte> values;
     public Dictionary<char, int> waves;
-    public string folder;
+    public string? folder;
 
     int transparent;
     byte[] statebuffer;
 
-    public static Grid Load(XElement xelem, int MX, int MY, int MZ)
+    public static Grid? Load(XElement xelem, int MX, int MY, int MZ)
     {
         Grid g = new();
         g.MX = MX;
         g.MY = MY;
         g.MZ = MZ;
-        string valueString = xelem.Get<string>("values", null)?.Replace(" ", "");
+        var valueString = xelem.Get<string?>("values", null)?.Replace(" ", "");
         if (valueString == null)
         {
             Interpreter.WriteLine("no values specified");
@@ -53,7 +53,7 @@ class Grid
             }
         }
 
-        string transparentString = xelem.Get<string>("transparent", null);
+        var transparentString = xelem.Get<string?>("transparent", null);
         if (transparentString != null) g.transparent = g.Wave(transparentString);
 
         var xunions = xelem.MyDescendants("markov", "sequence", "union").Where(x => x.Name == "union");
@@ -76,7 +76,7 @@ class Grid
         g.state = new byte[MX * MY * MZ];
         g.statebuffer = new byte[MX * MY * MZ];
         g.mask = new bool[MX * MY * MZ];
-        g.folder = xelem.Get<string>("folder", null);
+        g.folder = xelem.Get<string?>("folder", null);
         return g;
     }
 

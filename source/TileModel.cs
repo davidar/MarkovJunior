@@ -29,12 +29,12 @@ class TileNode : WFCNode
             Interpreter.WriteLine($"couldn't open tileset {filepath}");
             return false;
         }
-        XElement xroot = xdoc.Root;
+        XElement? xroot = xdoc.Root;
 
         bool fullSymmetry = xroot.Get("fullSymmetry", false);
-        XElement xfirsttile = xroot.Element("tiles").Element("tile");
+        var xfirsttile = xroot.Element("tiles")?.Element("tile");
         string firstFileName = $"{tilesname}/{xfirsttile.Get<string>("name")}.vox";
-        int[] firstData;
+        int[]? firstData;
         int SY;
         (firstData, S, SY, SZ) = VoxHelper.LoadVox($"resources/tilesets/{firstFileName}");
         if (firstData == null)
@@ -79,7 +79,7 @@ class TileNode : WFCNode
             double weight = xtile.Get("weight", 1.0);
 
             string filename = $"resources/tilesets/{tilesname}/{tilename}.vox";
-            int[] vox = VoxHelper.LoadVox(filename).Item1;
+            var vox = VoxHelper.LoadVox(filename).Item1;
             if (vox == null)
             {
                 Interpreter.WriteLine($"couldn't read tile {filename}");
@@ -119,8 +119,7 @@ class TileNode : WFCNode
             bool[] position = new bool[P];
             foreach (string s in outputs)
             {
-                bool success = positions.TryGetValue(s, out bool[] array);
-                if (!success)
+                if (!positions.TryGetValue(s, out var array))
                 {
                     Interpreter.WriteLine($"unknown tilename {s} at line {xrule.LineNumber()}");
                     return false;
@@ -139,8 +138,8 @@ class TileNode : WFCNode
             return -1;
         };
 
-        static string last(string attribute) => attribute?.Split(' ').Last();
-        byte[] tile(string attribute)
+        static string last(string attribute) => attribute.Split(' ').Last();
+        byte[]? tile(string attribute)
         {
             string[] code = attribute.Split(' ');
             string action = code.Length == 2 ? code[0] : "";
@@ -174,7 +173,8 @@ class TileNode : WFCNode
                     return false;
                 }
 
-                byte[] ltile = tile(left), rtile = tile(right);
+                var ltile = tile(left);
+                var rtile = tile(right);
                 if (ltile == null || rtile == null) return false;
 
                 var lsym = SymmetryHelper.SquareSymmetries(ltile, xRotate, yReflect, (p1, p2) => false).ToArray();
@@ -210,7 +210,7 @@ class TileNode : WFCNode
                     tempPropagator[4][index(zReflect(tsym[i]))][index(zReflect(bsym[i]))] = true;
                 }
             }
-            else if (xneighbor.Get<string>("left", null) != null)
+            else if (xneighbor.Get<string?>("left", null) != null)
             {
                 string left = xneighbor.Get<string>("left"), right = xneighbor.Get<string>("right");
                 if (!tilenames.Contains(last(left)) || !tilenames.Contains(last(right)))
@@ -219,7 +219,8 @@ class TileNode : WFCNode
                     return false;
                 }
 
-                byte[] ltile = tile(left), rtile = tile(right);
+                var ltile = tile(left);
+                var rtile = tile(right);
                 if (ltile == null || rtile == null) return false;
 
                 tempPropagator[0][index(ltile)][index(rtile)] = true;
@@ -237,14 +238,16 @@ class TileNode : WFCNode
             }
             else
             {
-                string top = xneighbor.Get<string>("top", null), bottom = xneighbor.Get<string>("bottom", null);
+                var top = xneighbor.Get<string?>("top", null);
+                var bottom = xneighbor.Get<string?>("bottom", null);
                 if (!tilenames.Contains(last(top)) || !tilenames.Contains(last(bottom)))
                 {
                     Interpreter.WriteLine($"unknown tile {last(top)} or {last(bottom)} at line {xneighbor.LineNumber()}");
                     return false;
                 }
 
-                byte[] ttile = tile(top), btile = tile(bottom);
+                var ttile = tile(top);
+                var btile = tile(bottom);
                 if (ttile == null || btile == null) return false;
 
                 var tsym = SymmetryHelper.SquareSymmetries(ttile, zRotate, xReflect, (p1, p2) => false).ToArray();

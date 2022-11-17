@@ -13,7 +13,7 @@ class ParallelNode : RuleNode
         return true;
     }
 
-    override protected void Add(int r, int x, int y, int z, bool[] maskr)
+    override protected void Add(int r, int x, int y, int z, bool[]? maskr)
     {
         Rule rule = rules[r];
         if (ip.random.NextDouble() > rule.p) return;

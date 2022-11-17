@@ -10,7 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 static class Graphics
 {
-    public static (int[], int, int, int) LoadBitmap(string filename)
+    public static (int[]?, int, int, int) LoadBitmap(string filename)
     {
         try
         {
@@ -136,8 +136,7 @@ static class Graphics
                 }
         };
 
-        bool success = sprites.TryGetValue(blocksize, out Sprite sprite);
-        if (!success)
+        if (!sprites.TryGetValue(blocksize, out Sprite? sprite))
         {
             sprite = new Sprite(blocksize);
             sprites.Add(blocksize, sprite);

@@ -163,8 +163,8 @@ class ConvolutionNode : Node
                 else return new int[1] { int.Parse(s) };
             };
 
-            string valueString = xelem.Get<string>("values", null);
-            string sumsString = xelem.Get<string>("sum", null);
+            var valueString = xelem.Get<string?>("values", null);
+            var sumsString = xelem.Get<string?>("sum", null);
             if (valueString != null && sumsString == null)
             {
                 Interpreter.WriteLine($"missing \"sum\" attribute at line {xelem.LineNumber()}");
@@ -176,7 +176,7 @@ class ConvolutionNode : Node
                 return false;
             }
             
-            if (valueString != null)
+            if (valueString != null && sumsString != null)
             {
                 values = valueString.Select(c => grid.values[c]).ToArray();
 

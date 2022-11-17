@@ -13,7 +13,7 @@ abstract class Node
     protected Interpreter ip;
     public Grid grid;
 
-    public static Node Factory(XElement xelem, bool[] symmetry, Interpreter ip, Grid grid)
+    public static Node? Factory(XElement xelem, bool[] symmetry, Interpreter ip, Grid grid)
     {
         if (!nodenames.Contains(xelem.Name.LocalName))
         {
@@ -21,7 +21,7 @@ abstract class Node
             return null;
         }
 
-        Node result = xelem.Name.LocalName switch
+        Node? result = xelem.Name.LocalName switch
         {
             "one" => new OneNode(),
             "all" => new AllNode(),
@@ -32,16 +32,19 @@ abstract class Node
             "map" => new MapNode(),
             "convolution" => new ConvolutionNode(),
             "convchain" => new ConvChainNode(),
-            "wfc" when xelem.Get<string>("sample", null) != null => new OverlapNode(),
-            "wfc" when xelem.Get<string>("tileset", null) != null => new TileNode(),
+            "wfc" when xelem.Get<string?>("sample", null) != null => new OverlapNode(),
+            "wfc" when xelem.Get<string?>("tileset", null) != null => new TileNode(),
             _ => null
         };
 
-        result.ip = ip;
-        result.grid = grid;
-        bool success = result.Load(xelem, symmetry, grid);
+        if (result is not null)
+        {
+            result.ip = ip;
+            result.grid = grid;
+            bool success = result.Load(xelem, symmetry, grid);
+            if (!success) return null;
+        }
 
-        if (!success) return null;
         return result;
     }
 
@@ -50,14 +53,14 @@ abstract class Node
 
 abstract class Branch : Node
 {
-    public Branch parent;
+    public Branch? parent;
     public Node[] nodes;
     public int n;
 
     override protected bool Load(XElement xelem, bool[] parentSymmetry, Grid grid)
     {
-        string symmetryString = xelem.Get<string>("symmetry", null);
-        bool[] symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, parentSymmetry);
+        var symmetryString = xelem.Get<string?>("symmetry", null);
+        var symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, parentSymmetry);
         if (symmetry == null)
         {
             Interpreter.WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
@@ -84,7 +87,7 @@ abstract class Branch : Node
             if (node is Branch branch) ip.current = branch;
             if (node.Go()) return true;
         }
-        ip.current = ip.current.parent;
+        ip.current = ip.current?.parent;
         Reset();
         return false;
     }

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 static class Helper
 {
-    public static (byte[], int) Ords(this int[] data, List<int> uniques = null)
+    public static (byte[], int) Ords(this int[] data, List<int>? uniques = null)
     {
         byte[] result = new byte[data.Length];
-        if (uniques == null) uniques = new List<int>();
+        uniques ??= new List<int>();
         for (int i = 0; i < data.Length; i++)
         {
             int d = data[i];

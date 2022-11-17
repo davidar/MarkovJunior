@@ -7,8 +7,8 @@ using System.Diagnostics;
 
 class Interpreter
 {
-    public Branch root, current;
-    public Grid grid;
+    public Branch? root, current;
+    public Grid? grid;
     Grid startgrid;
 
     bool origin;
@@ -21,7 +21,7 @@ class Interpreter
     public bool gif;
 
     Interpreter() { }
-    public static Interpreter Load(XElement xelem, int MX, int MY, int MZ)
+    public static Interpreter? Load(XElement xelem, int MX, int MY, int MZ)
     {
         Interpreter ip = new();
         ip.origin = xelem.Get("origin", false);
@@ -33,15 +33,15 @@ class Interpreter
         }
         ip.startgrid = ip.grid;
 
-        string symmetryString = xelem.Get<string>("symmetry", null);
-        bool[] symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, AH.Array1D(ip.grid.MZ == 1 ? 8 : 48, true));
+        var symmetryString = xelem.Get<string?>("symmetry", null);
+        var symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, AH.Array1D(ip.grid.MZ == 1 ? 8 : 48, true));
         if (symmetry == null)
         {
             WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
             return null;
         }
 
-        Node topnode = Node.Factory(xelem, symmetry, ip, ip.grid);
+        var topnode = Node.Factory(xelem, symmetry, ip, ip.grid);
         if (topnode == null) return null;
         ip.root = topnode is Branch ? topnode as Branch : new MarkovNode(topnode, ip);
 
@@ -61,7 +61,7 @@ class Interpreter
         first.Clear();
         first.Add(0);
 
-        root.Reset();
+        root?.Reset();
         current = root;
 
         this.gif = gif;

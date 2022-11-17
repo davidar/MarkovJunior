@@ -16,7 +16,7 @@ class Field
         string on = xelem.Get<string>("on");
         substrate = grid.Wave(on);
 
-        string zeroSymbols = xelem.Get<string>("from", null);
+        var zeroSymbols = xelem.Get<string?>("from", null);
         if (zeroSymbols != null) inversed = true;
         else zeroSymbols = xelem.Get<string>("to");
         zero = grid.Wave(zeroSymbols);
